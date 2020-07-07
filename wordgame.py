@@ -115,7 +115,7 @@ def validate_bot_word(bot_word, said_words):
 def randomised_response(user_word,bot_word,response_type):
   
   responses = list(responses_dictionary.get(response_type))
-  if ((response_type in ['TYPE_YOUR_WORD','ERROR_WRONG_LETTER']):  
+  if response_type in ['TYPE_YOUR_WORD','ERROR_WRONG_LETTER']:  
     response = random.choice(responses)
     response = response.replace('<first_letter>',bot_word[-1])
   elif response_type in ['OK_RESPONSE','ERROR_ALREADY_SAID']:
@@ -127,7 +127,9 @@ def randomised_response(user_word,bot_word,response_type):
 
 #Function to get the first word, chosen at random from the dictionary. Used only
 #for the first time in the game.
-def get_first_word(word_dictionary):
+def get_first_word():
+  word_dictionary = load_dictionary('level1')
+  
   letters = list(word_dictionary.keys())
   letter = random.choice(letters)
   words = list(word_dictionary.get(letter))
