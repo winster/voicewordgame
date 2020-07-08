@@ -19,6 +19,7 @@ responses_dictionary = {'YOUR_TURN':['Now it\'s your turn!','Your turn!'],
 import random
 import time
 from nltk.corpus import words
+from google.cloud import firestore
 setofwords = set(words.words())
 
 # This is the function that orchestrates the whole gameplay
@@ -37,7 +38,7 @@ def play_game(max_turns):
   print('Hmmmmm.....it is.......')
   time.sleep(2)
   #First word is chosen from the dictionary at random
-  bot_word = get_first_word(word_dictionary)
+  bot_word = get_first_word()
   print(bot_word)
   #Add the word to the list of said words
   said_words.append(bot_word)
