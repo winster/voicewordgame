@@ -170,12 +170,12 @@ def get_next_word(word_dictionary, user_word, said_words):
 # can be implemented
 def load_dictionary(level):
   
-  return load_dictionary_from_file(level)
+  return load_dictionary_from_file('dictionary_'+level+'.txt')
 
 # Load dictionary from text file. In the current design, one file contains words
 # related to one level only.
-def load_dictionary_from_file(level):
-  filename = 'dictionary_'+level+'.txt'
+def load_dictionary_from_file(filename):
+  
   word_dictionary = {}
   dictionary_values=[]
   f = open(filename, 'r')
