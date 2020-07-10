@@ -19,8 +19,18 @@ responses_dictionary = {'YOUR_TURN':['Now it\'s your turn!','Your turn!'],
 import random
 import time
 from nltk.corpus import words
-from google.cloud import firestore
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
 setofwords = set(words.words())
+
+
+# DB initialization
+cred = credentials.Certificate('firebase-adminsdk.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
 
 # This is the function that orchestrates the whole gameplay
 def play_game(max_turns):
@@ -75,7 +85,7 @@ def play_game(max_turns):
   print ('Thanks for playing. That was fun! Hope we can play again! :) :o)')
   return 
 
-# Function to get user's word. Once input is received this function calls the
+# Function to get user's word. Once input is received, this function calls the
 # validate_word function to identify if the entered word is valid as defined 
 # in that function. If not, an error message is displayed to the user and a 
 # recursive call to get_user_word function is made until a valid word is entered
@@ -164,6 +174,41 @@ def get_next_word(word_dictionary, user_word, said_words):
   else:
     word = 'ERROR_BOT_LOSES'
   return word
+
+# Function to get all the subsequent bot words from the Cloud Firestore database. 
+# It also invokes the validate_bot_word function to validate the bot word before 
+# responding to the user. If a suitable word cannot be found, the function 
+# returns an error
+def get_next_word_from_db(user_word, said_words, level):
+  
+  letter = user_word.lower()[-1]    # get last letter of user word
+  
+  # Collection path to retrieve the words starting with the letter
+  collection_path = 'words/'+level+'/'+letter
+  letter_ref = db.collection(collection_path)
+  docs = letter_ref.stream()
+  word_dict = {}
+  words = []
+  
+  for doc in docs:
+    print(f'{doc.id} => {doc.to_dict()}')
+    words.append(doc.id)
+    word_dict[doc.id]=doc.to_dict()
+  possiblewords = list(set(words)-set(said_words))
+    
+  if len(possiblewords) > 0:
+    word = random.choice(possiblewords)
+    answer = {
+      'word':word, 
+      'details':word_dict.get(word)
+    }
+  else: 
+    answer = {
+      'word':'',
+      'error':'ERROR_BOT_LOSES'
+    }
+    
+  return answer
 
 # Function to load dictionary. Currently only loading from text file has been 
 # implemented. In the future, other methods like reading from a database or API

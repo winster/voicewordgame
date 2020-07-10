@@ -5,7 +5,6 @@ import firebase_admin
 import csv
 from firebase_admin import credentials
 from firebase_admin import firestore
-import time
 
 
 # DB initialization
